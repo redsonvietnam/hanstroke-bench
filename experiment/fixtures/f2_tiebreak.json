@@ -1,0 +1,22 @@
+{
+  "fault_id": "F2",
+  "name": "regex_tiebreak_error",
+  "description": "Multiple regex branches match; first tie-break is wrong, another is correct",
+  "scenario": "Character 好 has two valid IDS decompositions. Tie-break picks branch 1 (wrong). Branch 2 is correct.",
+  "raw_artifact": {
+    "character": "好",
+    "codepoint": "U+597D",
+    "decompositions": [
+      {"branch": 1, "ids": "⿰女子", "tiebreak_rank": 1, "correct": false, "reason": "女 is not the left component in standard decomposition"},
+      {"branch": 2, "ids": "⿰女子", "tiebreak_rank": 2, "correct": true, "reason": "Standard IDS decomposition"}
+    ],
+    "tiebreak_rule": "first_match_wins",
+    "symptom": "Wrong decomposition leads to wrong anchor selection"
+  },
+  "questions": [
+    "Is the tie-break rule correct?",
+    "Which branch should be selected?",
+    "How was the tie-break rule validated?"
+  ],
+  "ground_truth_ref": "F2"
+}

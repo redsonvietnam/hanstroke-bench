@@ -1,0 +1,21 @@
+{
+  "fault_id": "F1",
+  "name": "stroke_mapping_error",
+  "description": "A stroke token is mapped to wrong digit class in the stroke table",
+  "scenario": "Token ㇀ (提) is mapped to digit 1 (横). Correct mapping is 4 (提).",
+  "raw_artifact": {
+    "stroke_table": {
+      "㇀": {"digit": "1", "name": "横", "correct_digit": "4", "correct_name": "提"},
+      "㇏": {"digit": "4", "name": "捺", "correct_digit": "4", "correct_name": "捺"},
+      "㇐": {"digit": "1", "name": "横", "correct_digit": "1", "correct_name": "横"}
+    },
+    "affected_characters": ["提", "打", "把", "找"],
+    "symptom": "Characters with 提 as first stroke get wrong anchor code"
+  },
+  "questions": [
+    "Is the stroke mapping correct?",
+    "Which characters are affected?",
+    "What is the correct mapping?"
+  ],
+  "ground_truth_ref": "F1"
+}

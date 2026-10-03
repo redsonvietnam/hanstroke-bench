@@ -1,0 +1,29 @@
+{
+  "fault_id": "F4",
+  "name": "placeholder_handling",
+  "description": "Placeholder/component missing; must distinguish known/unknown/derived/placeholder",
+  "scenario": "Character 羲 (U+7FB2) has a component with missing stroke data. System must label it PLACEHOLDER, not guess.",
+  "raw_artifact": {
+    "character": "羲",
+    "codepoint": "U+7FB2",
+    "ids": "⿱羊⿱禾⿰丿乂",
+    "components": [
+      {"component": "羊", "status": "known", "strokes": "P H V H H H"},
+      {"component": "禾", "status": "known", "strokes": "P H D H H"},
+      {"component": "丿", "status": "known", "strokes": "P"},
+      {"component": "乂", "status": "placeholder", "strokes": null, "reason": "missing stroke data in source"}
+    ],
+    "system_output": {
+      "guessed_strokes": "P H D",
+      "guessed": true,
+      "labeled_placeholder": false
+    },
+    "symptom": "System silently guesses missing stroke data instead of labeling placeholder"
+  },
+  "questions": [
+    "Is the system handling placeholders correctly?",
+    "Should missing data be guessed or labeled?",
+    "What is the correct label for missing component data?"
+  ],
+  "ground_truth_ref": "F4"
+}

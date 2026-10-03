@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+.cache/
+node_modules/
+*.log
+run_*_log.txt
+golden_out*.txt
+.playwright-mcp/
+probe_*.py
+spotcheck_100.py

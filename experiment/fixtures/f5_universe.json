@@ -1,0 +1,28 @@
+{
+  "fault_id": "F5",
+  "name": "candidate_universe_narrowing",
+  "description": "Reviewer sees only corpus subset → pretty results, but full B0 has large collisions",
+  "scenario": "A reviewer evaluates collision metrics on a subset of B0 (frequent chars only). Results look great. But full B0 (27,584 chars) has many more collisions.",
+  "raw_artifact": {
+    "spec_universe": "B0 = U+4E00-9FFF + U+3400-4DBF = 27,584 chars",
+    "reviewer_universe": "B1 freq subset = 3,000 chars",
+    "subset_results": {
+      "gate_pass_rate": 0.99,
+      "collision_rate": 0.01,
+      "looks_good": true
+    },
+    "full_b0_results": {
+      "gate_pass_rate": 0.96,
+      "collision_rate": 0.04,
+      "meets_gate": true,
+      "but_different": true
+    },
+    "symptom": "Subset evaluation is misleading — full B0 tells different story"
+  },
+  "questions": [
+    "Is the evaluation universe correct?",
+    "Does subset evaluation represent full B0?",
+    "What is the correct universe for gate evaluation?"
+  ],
+  "ground_truth_ref": "F5"
+}

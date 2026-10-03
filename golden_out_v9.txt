@@ -1,0 +1,135 @@
+﻿>>> Verifying source checksums against locked manifest (FAIL-CLOSED)...
+  [OK] unihan: SHA-256 matches locked hash (4c93ea9c1f63...)
+  [OK] ids: SHA-256 matches locked hash (bfc70a8c09f9...)
+  [OK] stroke_order: SHA-256 matches locked hash (809a7fb7f14c...)
+  [OK] stroke_seq: SHA-256 matches locked hash (1304919cad30...)
+  [OK] stroke_cnchar_table: SHA-256 matches locked hash (3d8faaf8feb7...)
+  [OK] stroke_cnchar_jian: SHA-256 matches locked hash (412e3beb587a...)
+  [OK] stroke_cnchar_trad: SHA-256 matches locked hash (d628a5dc7d8c...)
+  [OK] freq_b1: SHA-256 matches locked hash (de6649a691da...)
+  Stroke data: 27497 from stroke-input (BASE), 188 filled from cnchar, 9316 intersection.
+  Cross-check: 750/9316 (8.05%) disagree first/last vs cnchar (V4-CHOT quality metric).
+  Flags: cnchar_resolved=665 ambiguous_order=9395 source_conflict=86.
+  Anchor table: 9504 cnchar, 12740 tq, 0 fill, 2829 ids_picked, 2612 ambiguous, 27685 entries.
+  IDS_PICKED (V9): 2829 chars resolved (743 actually changed) via IDS leading/trailing VERIFIED leaf (excluded_enclosing=134 no_leaf=154 unverified=2342 conflict=89).
+  IDS validation (cnchar ground truth): 1239/1298 agree (95.45%) ΓÇö revoke rule if error rate >5% (Claude V9).
+  Notice: 652 stroke_seq lines skipped (non-sequence field).
+  Golden freeze hash OK: 83d444d66bf594b0... (117 anchors)
+>>> Running GOLDEN TESTS on 117 reference anchors (Φ▒ÄΘëñ = V enforced)...
+  [PASS] Σ║╗ (U+4EBB) total=2 first=P last=V
+  [PASS] µ░╡ (U+6C35) total=3 first=D last=H
+  [PASS] µùÑ (U+65E5) total=4 first=V last=H
+  [PASS] σÑ│ (U+5973) total=3 first=Z last=H
+  [PASS] σ¡É (U+5B50) total=3 first=Z last=H
+  [PASS] µ░┤ (U+6C34) total=4 first=V last=D
+  [PASS] σ░Å (U+5C0F) total=3 first=V last=D
+  [PASS] σ«Ç (U+5B80) total=3 first=D last=Z
+  [PASS] Φë╣ (U+8279) total=3 first=H last=V
+  [PASS] σÅú (U+53E3) total=3 first=V last=H
+  [PASS] µ£¿ (U+6728) total=4 first=H last=D
+  [PASS] τü½ (U+706B) total=4 first=D last=D
+  [PASS] σ£ƒ (U+571F) total=3 first=H last=H
+  [PASS] Θçæ (U+91D1) total=8 first=P last=H
+  [PASS] σ┐â (U+5FC3) total=4 first=D last=D
+  [PASS] µëï (U+624B) total=4 first=P last=V
+  [PASS] τ¢« (U+76EE) total=5 first=V last=H
+  [PASS] Φ¿Ç (U+8A00) total=7 first=D last=H
+  [PASS] ΦÖ½ (U+866B) total=6 first=V last=D
+  [PASS] Θ▒╝ (U+9C7C) total=8 first=P last=H
+  [PASS] Θ╕ƒ (U+9E1F) total=5 first=P last=H
+  [PASS] Θ⌐¼ (U+9A6C) total=3 first=Z last=H
+  [PASS] Φ╜ª (U+8F66) total=4 first=H last=V
+  [PASS] Φ┤¥ (U+8D1D) total=4 first=V last=D
+  [PASS] Θù¿ (U+95E8) total=3 first=D last=Z
+  [PASS] µ£ê (U+6708) total=4 first=P last=H
+  [PASS] σ▒▒ (U+5C71) total=3 first=V last=V
+  [PASS] τö░ (U+7530) total=5 first=V last=H
+  [PASS] τƒ│ (U+77F3) total=5 first=H last=H
+  [PASS] τ½╣ (U+7AF9) total=6 first=P last=V
+  [PASS] τ▒│ (U+7C73) total=6 first=D last=D
+  [PASS] Θ¢¿ (U+96E8) total=8 first=H last=D
+  [PASS] τÖ╜ (U+767D) total=5 first=P last=H
+  [PASS] Θ╗æ (U+9ED1) total=12 first=V last=D
+  [PASS] τö╖ (U+7537) total=7 first=V last=P
+  [PASS] σè¢ (U+529B) total=2 first=Z last=P
+  [PASS] ΦÇ│ (U+8033) total=6 first=H last=H
+  [PASS] σñº (U+5927) total=3 first=H last=D
+  [PASS] Σ╕¡ (U+4E2D) total=4 first=V last=V
+  [PASS] Σ╕Ç (U+4E00) total=1 first=H last=H
+  [PASS] Σ║î (U+4E8C) total=2 first=H last=H
+  [PASS] Σ╕ë (U+4E09) total=3 first=H last=H
+  [PASS] σìü (U+5341) total=2 first=H last=V
+  [PASS] Σ║║ (U+4EBA) total=2 first=P last=D
+  [PASS] σÅê (U+53C8) total=2 first=Z last=D
+  [PASS] σ»╕ (U+5BF8) total=3 first=H last=D
+  [PASS] σ╝ô (U+5F13) total=3 first=Z last=Z
+  [PASS] µêê (U+6208) total=4 first=H last=D
+  [PASS] µê╕ (U+6238) total=4 first=H last=P
+  [PASS] Θí╡ (U+9875) total=6 first=H last=D
+  [PASS] ΘúÄ (U+98CE) total=4 first=P last=D
+  [PASS] Θú₧ (U+98DE) total=3 first=Z last=D
+  [PASS] Θò┐ (U+957F) total=4 first=P last=D
+  [PASS] Φºü (U+89C1) total=4 first=V last=Z
+  [PASS] Φ╡░ (U+8D70) total=7 first=H last=D
+  [PASS] Φ╢│ (U+8DB3) total=7 first=V last=D
+  [PASS] τª╛ (U+79BE) total=5 first=P last=D
+  [PASS] σ╣┐ (U+5E7F) total=3 first=D last=P
+  [PASS] τûÆ (U+7592) total=5 first=D last=H
+  [PASS] Φ╛╢ (U+8FB6) total=3 first=D last=D
+  [PASS] ΘûÇ (U+9580) total=8 first=V last=H
+  [PASS] Φ╗è (U+8ECA) total=7 first=H last=V
+  [PASS] Θª¼ (U+99AC) total=10 first=H last=D
+  [PASS] µê╢ (U+6236) total=4 first=P last=H
+  [PASS] µê╖ (U+6237) total=4 first=D last=P
+  [PASS] Σ╗Ñ (U+4EE5) total=4 first=Z last=D
+  [PASS] σï¢ (U+52DB) total=12 first=V last=P
+  [PASS] Θ▒║ (U+9C7A) total=30 first=P last=Z
+  [PASS] σÇå (U+5006) total=10 first=P last=D
+  [PASS] Φö₧ (U+851E) total=14 first=H last=H
+  [PASS] µÜó (U+66A2) total=14 first=V last=P
+  [PASS] Θî« (U+932E) total=16 first=P last=H
+  [PASS] τ╢┤ (U+7DB4) total=14 first=Z last=D
+  [PASS] µàì (U+614D) total=13 first=D last=H
+  [PASS] Θ╢┤ (U+9DB4) total=21 first=D last=D
+  [PASS] Φ¬í (U+8AA1) total=14 first=D last=D
+  [PASS] ΘÉ¿ (U+9428) total=20 first=P last=D
+  [PASS] τ╕É (U+7E10) total=16 first=Z last=P
+  [PASS] σÜ┤ (U+56B4) total=19 first=V last=D
+  [PASS] σä╗ (U+513B) total=22 first=P last=D
+  [PASS] ΘëÇ (U+9240) total=13 first=P last=V
+  [PASS] Φ¿║ (U+8A3A) total=12 first=D last=P
+  [PASS] µÉ╛ (U+643E) total=13 first=H last=H
+  [PASS] Θ╜á (U+9F60) total=20 first=V last=H
+  [PASS] µÆô (U+6493) total=15 first=H last=Z
+  [PASS] Θ╢⌐ (U+9DA9) total=20 first=Z last=D
+  [PASS] ΘÅó (U+93E2) total=19 first=P last=D
+  [PASS] σƒí (U+57E1) total=11 first=H last=H
+  [PASS] τÆë (U+7489) total=14 first=H last=D
+  [PASS] Θó│ (U+98B3) total=15 first=P last=H
+  [PASS] Θï¬ (U+92EA) total=15 first=P last=D
+  [PASS] µÜ▒ (U+66B1) total=14 first=V last=Z
+  [PASS] τò╢ (U+7576) total=13 first=V last=H
+  [PASS] τ╣å (U+7E46) total=17 first=Z last=P
+  [PASS] ΦòÄ (U+854E) total=15 first=H last=H
+  [PASS] ΦÉç (U+8407) total=11 first=H last=D
+  [PASS] σÉÆ (U+5412) total=6 first=V last=Z
+  [PASS] τª¬ (U+79AA) total=16 first=D last=V
+  [PASS] µ╗ä (U+6EC4) total=13 first=D last=H
+  [PASS] ΘÅê (U+93C8) total=18 first=P last=D
+  [PASS] σòô (U+5553) total=11 first=D last=H
+  [PASS] Φä¢ (U+811B) total=11 first=P last=H
+  [PASS] ΘÇú (U+9023) total=10 first=H last=D
+  [PASS] Φíô (U+8853) total=11 first=P last=V
+  [PASS] σî▓ (U+5332) total=14 first=H last=Z
+  [PASS] µÉ¼ (U+642C) total=13 first=H last=D
+  [PASS] Θ¬ÿ (U+9A98) total=13 first=Z last=H
+  [PASS] µÇä (U+6004) total=7 first=D last=Z
+  [PASS] τ░╕ (U+7C38) total=19 first=P last=D
+  [PASS] Σ┐Ü (U+4FDA) total=9 first=P last=H
+  [PASS] Φï£ (U+82DC) total=8 first=H last=H
+  [PASS] Θù» (U+95EF) total=6 first=D last=H
+  [PASS] µêÆ (U+6212) total=7 first=H last=D
+  [PASS] σƒ¥ (U+57DD) total=11 first=H last=D
+  [PASS] Φïí (U+82E1) total=7 first=H last=D
+  [PASS] Φ½⌐ (U+8AE9) total=15 first=D last=H
+  [PASS] Σ¢í (U+46E1) total=14 first=D last=H

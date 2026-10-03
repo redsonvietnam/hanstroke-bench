@@ -1,0 +1,86 @@
+﻿{
+  "spec_version": "CHOT-2026-10-03",
+  "updated_at": "2026-10-03T00:35:28.939185+00:00",
+  "sources": {
+    "unihan": {
+      "name": "unihan",
+      "url": "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip",
+      "version": "latest",
+      "sha256": "4c93ea9c1f636451729a840978f1667a53886af37ba854fdcce109721c63d43e",
+      "license": "Unicode License",
+      "bytes": 8340649,
+      "downloaded_at": "2026-10-03T00:35:32.139116+00:00",
+      "note": "Unihan database for kTotalStrokes, kTraditionalVariant, kSimplifiedVariant"
+    },
+    "ids": {
+      "name": "ids",
+      "url": "https://raw.githubusercontent.com/cjkvi/cjkvi-ids/master/ids.txt",
+      "version": "86b4d16159f0079437870408f0ca186e529015db",
+      "sha256": "bfc70a8c09f9f5616ebf0543bd6681e67314e9f7ae2307e5ae8c6f15bdc5c6a6",
+      "license": "GPL / Open Data",
+      "bytes": 2161631,
+      "downloaded_at": "2026-10-03T00:35:33.595913+00:00",
+      "note": "CJKVI IDS syntax table"
+    },
+    "stroke_order": {
+      "name": "stroke_order",
+      "url": "https://raw.githubusercontent.com/cjkvi/cjkvi-ids/master/ucs-strokes.txt",
+      "version": "86b4d16159f0079437870408f0ca186e529015db",
+      "sha256": "809a7fb7f14cbd9bd319c50ed4ba9477d1802eb682bf49b2b972d6eb3ec10a71",
+      "license": "GPL / Open Data",
+      "bytes": 1420609,
+      "downloaded_at": "2026-10-03T00:35:34.652102+00:00",
+      "note": "CJKVI stroke counts (codepoint, char, total strokes)"
+    },
+    "stroke_seq": {
+      "name": "stroke_seq",
+      "url": "https://raw.githubusercontent.com/stroke-input/stroke-input-data/master/codepoint-character-sequence.txt",
+      "version": "latest",
+      "sha256": "1304919cad309c7c75be5b6aa9dfa343b588665d183b1270c9bf8b273812b2f0",
+      "license": "CC-BY-4.0 (Conway Stroke Data)",
+      "bytes": 936099,
+      "downloaded_at": "2026-10-03T00:35:35.469314+00:00",
+      "note": "Stroke-input: tab-separated (codepoint, character, stroke sequence regex), classes 1-5"
+    },
+    "stroke_cnchar_table": {
+      "name": "stroke_cnchar_table",
+      "url": "https://raw.githubusercontent.com/theajack/cnchar/master/src/cnchar/plugin/order/dict/stroke-table.json",
+      "version": "latest",
+      "sha256": "3d8faaf8feb76e4e13c3a335a6a3b370a5b1ce0b817c548442852f2090642e4f",
+      "license": "MIT (cnchar)",
+      "bytes": 2415,
+      "downloaded_at": "2026-10-03T00:35:35.631164+00:00",
+      "note": "cnchar stroke letter table: letter -> shape/type/name (named strokes)"
+    },
+    "stroke_cnchar_jian": {
+      "name": "stroke_cnchar_jian",
+      "url": "https://raw.githubusercontent.com/theajack/cnchar/master/src/cnchar/plugin/order/dict/stroke-order-jian.json",
+      "version": "latest",
+      "sha256": "412e3beb587aa5e8b423655226b956eaef0496e8c06e486d7584b2f3e1dbcdcc",
+      "license": "MIT (cnchar)",
+      "bytes": 157396,
+      "downloaded_at": "2026-10-03T00:35:35.889043+00:00",
+      "note": "cnchar simplified stroke order: char -> stroke letter sequence"
+    },
+    "stroke_cnchar_trad": {
+      "name": "stroke_cnchar_trad",
+      "url": "https://raw.githubusercontent.com/theajack/cnchar/master/src/cnchar/plugin/trad/dict/stroke-order-trad.json",
+      "version": "latest",
+      "sha256": "d628a5dc7d8c9770370ce8a53d712fb08b20817a674848b89f4c38994c7616f4",
+      "license": "MIT (cnchar)",
+      "bytes": 75433,
+      "downloaded_at": "2026-10-03T00:35:36.096400+00:00",
+      "note": "cnchar traditional stroke order: char -> stroke letter sequence"
+    },
+    "freq_b1": {
+      "name": "freq_b1",
+      "url": "https://lingua.mtsu.edu/chinese-computing/statistics/char/download.php?Which=MO",
+      "version": "latest",
+      "sha256": "de6649a691da4bccefc7b1467b2ff5888c85830a9fc88056e5d3d675ee9bb1a6",
+      "license": "Academic / Non-commercial (Jun Da)",
+      "bytes": 483279,
+      "downloaded_at": "2026-10-03T00:35:43.992034+00:00",
+      "note": "Jun Da modern Chinese character frequency table (tab-delimited, gb2312)"
+    }
+  }
+}

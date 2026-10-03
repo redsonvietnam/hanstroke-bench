@@ -1,0 +1,965 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bộ gõ Hán HANSTROKE V2 - Demo Tương tác</title>
+  <style>
+    :root {
+      --bg-main: #0b0f19;
+      --bg-card: #151d2e;
+      --bg-card-sub: #1e293b;
+      --border: #334155;
+      --border-accent: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --cyan: #38bdf8;
+      --emerald: #34d399;
+      --indigo: #818cf8;
+      --rose: #fb7185;
+      --amber: #fbbf24;
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      padding: 16px;
+      line-height: 1.5;
+    }
+
+    .container { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+
+    header {
+      background: linear-gradient(135deg, #1e1b4b, #0f172a);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand h1 { font-size: 1.5rem; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .brand p { font-size: 0.85rem; color: var(--text-muted); }
+    .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Output buffer */
+    .output-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; }
+    .panel-title { font-size: 0.95rem; font-weight: 700; color: var(--indigo); letter-spacing: 0.5px; }
+    .output-box {
+      width: 100%;
+      min-height: 64px;
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 1.6rem;
+      color: #fff;
+      font-family: "PingFang SC", "Microsoft YaHei", serif;
+      word-break: break-all;
+      letter-spacing: 2px;
+    }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      background: var(--bg-card-sub);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .btn:hover { background: #334155; border-color: var(--cyan); }
+    .btn-primary { background: #2563eb; border-color: #3b82f6; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-danger { color: #fca5a5; }
+    .btn-danger:hover { background: #451a1a; border-color: var(--rose); }
+
+    /* Main workspace: 2 columns */
+    .workspace {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 18px;
+    }
+    @media (max-width: 980px) {
+      .workspace { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .input-group { display: flex; flex-direction: column; gap: 6px; position: relative; }
+    .input-label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: flex; justify-content: space-between; }
+    .input-field {
+      background: #090d16;
+      border: 1.5px solid var(--border);
+      color: #fff;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 1.1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-field:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
+    .input-field::placeholder { color: #475569; font-size: 0.9rem; }
+
+    /* Decomposition bar */
+    .decomp-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .decomp-cell {
+      background: var(--bg-card-sub);
+      border-radius: 6px;
+      padding: 6px 8px;
+      text-align: center;
+      border-left: 3px solid var(--cyan);
+    }
+    .decomp-cell:nth-child(2) { border-left-color: var(--emerald); }
+    .decomp-cell:nth-child(3) { border-left-color: var(--indigo); }
+    .decomp-cell .sub { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+    .decomp-cell .val { font-size: 0.85rem; font-weight: 700; color: #fff; margin-top: 2px; }
+
+    /* Candidates Grid */
+    .candidates-box { display: flex; flex-direction: column; gap: 8px; }
+    .cand-header { display: flex; justify-content: space-between; align-items: center; }
+    .cand-count {
+      font-size: 0.75rem;
+      background: #334155;
+      padding: 2px 8px;
+      border-radius: 12px;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+    .cand-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+      gap: 8px;
+      min-height: 90px;
+    }
+    .cand-item {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .cand-item:hover, .cand-item.active {
+      border-color: var(--cyan);
+      background: #1e293b;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.2);
+    }
+    .cand-num {
+      position: absolute;
+      top: 4px;
+      left: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--amber);
+    }
+    .cand-char { font-size: 1.8rem; line-height: 1.2; font-family: "PingFang SC", "Microsoft YaHei", serif; }
+    .cand-code { font-size: 0.7rem; color: var(--text-muted); font-family: monospace; }
+    .cand-empty {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 0.85rem;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      min-height: 90px;
+    }
+
+    /* Lookup view */
+    .lookup-detail {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .lookup-main {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 12px;
+    }
+    .lookup-char {
+      font-size: 3.2rem;
+      line-height: 1;
+      width: 72px;
+      height: 72px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-family: "PingFang SC", "Microsoft YaHei", serif;
+    }
+    .lookup-meta h3 { font-size: 1.2rem; color: #fff; }
+    .code-badge {
+      display: inline-block;
+      background: rgba(129, 140, 248, 0.2);
+      color: var(--indigo);
+      border: 1px solid rgba(129, 140, 248, 0.4);
+      padding: 2px 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .detail-item {
+      background: var(--bg-card-sub);
+      padding: 8px 10px;
+      border-radius: 6px;
+    }
+    .detail-item .lbl { font-size: 0.7rem; color: var(--text-muted); }
+    .detail-item .val { font-size: 0.85rem; font-weight: 600; color: #f1f5f9; }
+
+    .decomp-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.82rem;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #1e293b;
+    }
+    .step-line { display: flex; gap: 8px; align-items: baseline; }
+    .step-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: #334155;
+      color: #e2e8f0;
+      white-space: nowrap;
+    }
+
+    .quick-sample-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 84px;
+      overflow-y: auto;
+      padding-top: 4px;
+    }
+    .sample-pill {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .sample-pill:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    /* Legend Panel */
+    .legend-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .legend-tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .tab-btn.active { background: #334155; color: var(--cyan); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* 5x5 Matrix table */
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+    .matrix-table th, .matrix-table td {
+      border: 1px solid var(--border);
+      padding: 8px 4px;
+    }
+    .matrix-table th { background: #090d16; color: var(--cyan); font-weight: 600; }
+    .matrix-table td.code-cell {
+      background: var(--bg-card-sub);
+      font-family: monospace;
+      font-weight: 700;
+      color: #fff;
+    }
+    .matrix-table td.code-cell:hover { background: #1e3a5f; color: var(--cyan); cursor: default; }
+
+    /* IDS Table */
+    .ids-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+    .ids-item {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8rem;
+    }
+    .ids-key {
+      font-weight: 800;
+      color: var(--emerald);
+      font-size: 0.9rem;
+      min-width: 16px;
+    }
+    .ids-glyph { font-size: 1.1rem; color: #fff; font-family: serif; }
+
+    /* Keymap */
+    .keymap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 6px;
+      font-size: 0.78rem;
+    }
+    .keymap-item {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 5px 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .keymap-item kbd {
+      background: #334155;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+      color: var(--amber);
+      font-weight: 700;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #065f46;
+      color: #ecfdf5;
+      border: 1px solid var(--emerald);
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+      z-index: 999;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <h1>Bộ gõ Hán HANSTROKE V2</h1>
+        <p>Quy tắc 3 tầng: [Nét dư / z] [Hình thức IDS 1–9] [Nhóm hình dạng 5×5]</p>
+      </div>
+      <div class="badges">
+        <span class="tag">Mã chuẩn hóa V2</span>
+        <span class="tag">51 Chữ cốt lõi</span>
+        <span class="tag">Thuần JS / No CDN</span>
+      </div>
+    </header>
+
+    <!-- Buffer output -->
+    <section class="output-panel">
+      <div class="panel-header">
+        <span class="panel-title">VĂN BẢN ĐÃ NHẬP (OUTPUT BUFFER)</span>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="copyBtn">📋 Sao chép</button>
+          <button class="btn" id="backspaceBtn">⌫ Xóa lùi</button>
+          <button class="btn btn-danger" id="clearBtn">🗑️ Xóa hết</button>
+        </div>
+      </div>
+      <div class="output-box" id="outputBox" contenteditable="true" spellcheck="false" placeholder="Các chữ chọn sẽ hiển thị tại đây..."></div>
+    </section>
+
+    <!-- Main Workspace -->
+    <div class="workspace">
+      <!-- Section 1: Typing Input -->
+      <section class="card">
+        <div class="input-group">
+          <div class="input-label">
+            <span>(1) GÕ MÃ HANSTROKE V2 (2–3 KÝ TỰ)</span>
+            <span style="font-size: 0.75rem; color: var(--cyan);">Phím 1–9 để chọn nhanh ứng viên</span>
+          </div>
+          <input type="text" id="HANSTROKEInput" class="input-field" placeholder="Gõ mã, vd: 52c (你), 426 (明), z1o (书), 21 (人)..." autocomplete="off" autofocus />
+        </div>
+
+        <!-- 3-Tier Decomposition Strip -->
+        <div class="decomp-strip">
+          <div class="decomp-cell">
+            <div class="sub">Tầng 1: Nét dư</div>
+            <div class="val" id="decT1">—</div>
+          </div>
+          <div class="decomp-cell">
+            <div class="sub">Tầng 2: Hình thức IDS</div>
+            <div class="val" id="decT2">—</div>
+          </div>
+          <div class="decomp-cell">
+            <div class="sub">Tầng 3: Nhóm hình dạng</div>
+            <div class="val" id="decT3">—</div>
+          </div>
+        </div>
+
+        <!-- Candidate Grid -->
+        <div class="candidates-box">
+          <div class="cand-header">
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">LƯỚI ỨNG VIÊN (TỐI ĐA 9)</span>
+            <span class="cand-count" id="candCount">0 ứng viên</span>
+          </div>
+          <div class="cand-grid" id="candGrid">
+            <div class="cand-empty">Nhập mã vào ô phía trên để hiển thị ứng viên</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Character Lookup -->
+      <section class="card">
+        <div class="input-group">
+          <div class="input-label">
+            <span>(2) TRA CHỮ HÁN</span>
+            <span style="font-size: 0.75rem; color: var(--emerald);">Nhập 1 chữ bất kỳ trong kho</span>
+          </div>
+          <input type="text" id="lookupInput" class="input-field" maxlength="2" placeholder="Nhập 1 chữ, vd: 好, 乘, 国, 学..." />
+        </div>
+
+        <div class="lookup-detail" id="lookupResult">
+          <!-- Populated by JS -->
+        </div>
+
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Click thử nhanh chữ mẫu:</div>
+          <div class="quick-sample-list" id="sampleList"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Section 3: Legend Panel -->
+    <section class="legend-card">
+      <div class="panel-header">
+        <span class="panel-title" style="color: var(--cyan);">BẢNG TRA CỨU HỆ THỐNG HANSTROKE V2 CỐ ĐỊNH</span>
+      </div>
+
+      <div class="legend-tabs">
+        <button class="tab-btn active" data-tab="tabMatrix">1. Ma trận 5×5 (Tầng 3)</button>
+        <button class="tab-btn" data-tab="tabIDS">2. 9 Hình thức IDS (Tầng 2)</button>
+        <button class="tab-btn" data-tab="tabStrokes">3. Ánh xạ nét dư (Tầng 1)</button>
+      </div>
+
+      <!-- Tab 1: 5x5 Matrix -->
+      <div id="tabMatrix" class="tab-content active">
+        <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 8px;">
+          Giao giữa <b>Nét đầu</b> (Hàng) và <b>Nét cuối</b> (Cột). Thứ tự 5 nét cơ bản: <b>H</b> (Ngang 横), <b>V</b> (Sổ 竖), <b>P</b> (Phẩy 撇), <b>D</b> (Chấm/Nại 点捺), <b>Z</b> (Gập/Chiết 折钩).
+        </div>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Đầu \ Cuối</th>
+              <th>H (Ngang)</th>
+              <th>V (Sổ)</th>
+              <th>P (Phẩy)</th>
+              <th>D (Chấm/Nại)</th>
+              <th>Z (Gập)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>H (Ngang)</th>
+              <td class="code-cell">1</td>
+              <td class="code-cell">2</td>
+              <td class="code-cell">3</td>
+              <td class="code-cell">4</td>
+              <td class="code-cell">5</td>
+            </tr>
+            <tr>
+              <th>V (Sổ)</th>
+              <td class="code-cell">6</td>
+              <td class="code-cell">7</td>
+              <td class="code-cell">8</td>
+              <td class="code-cell">9</td>
+              <td class="code-cell">a</td>
+            </tr>
+            <tr>
+              <th>P (Phẩy)</th>
+              <td class="code-cell">b</td>
+              <td class="code-cell">c</td>
+              <td class="code-cell">d</td>
+              <td class="code-cell">e</td>
+              <td class="code-cell">f</td>
+            </tr>
+            <tr>
+              <th>D (Chấm/Nại)</th>
+              <td class="code-cell">g</td>
+              <td class="code-cell">h</td>
+              <td class="code-cell">i</td>
+              <td class="code-cell">j</td>
+              <td class="code-cell">k</td>
+            </tr>
+            <tr>
+              <th>Z (Gập)</th>
+              <td class="code-cell">l</td>
+              <td class="code-cell">m</td>
+              <td class="code-cell">n</td>
+              <td class="code-cell">o</td>
+              <td class="code-cell">p</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">
+          * Ghi chú: Mã kiểm chứng đặc thù `t` đại diện biến thể bao kín/tổ hợp liên khối đặc biệt (như 国=84t, 学=83t, 家=z3t).
+        </div>
+      </div>
+
+      <!-- Tab 2: IDS Form -->
+      <div id="tabIDS" class="tab-content">
+        <div class="ids-grid">
+          <div class="ids-item"><span class="ids-key">1</span><span class="ids-glyph">⿻⁰</span><span>1 = Đơn thể (terminal/không tách)</span></div>
+          <div class="ids-item"><span class="ids-key">2</span><span class="ids-glyph">⿰</span><span>2 = Trái – Phải</span></div>
+          <div class="ids-item"><span class="ids-key">3</span><span class="ids-glyph">⿱</span><span>3 = Trên – Dưới</span></div>
+          <div class="ids-item"><span class="ids-key">4</span><span class="ids-glyph">⿴</span><span>4 = Bao kín</span></div>
+          <div class="ids-item"><span class="ids-key">5</span><span class="ids-glyph">⿵ / ⿸</span><span>5 = Bao mở phải / trên-trái</span></div>
+          <div class="ids-item"><span class="ids-key">6</span><span class="ids-glyph">⿶ / ⿹</span><span>6 = Bao mở trái / trên-phải</span></div>
+          <div class="ids-item"><span class="ids-key">7</span><span class="ids-glyph">⿷ / ⿺</span><span>7 = Bao mở dưới / dưới-trái</span></div>
+          <div class="ids-item"><span class="ids-key">8</span><span class="ids-glyph">⿀</span><span>8 = Bao mở trên</span></div>
+          <div class="ids-item"><span class="ids-key">9</span><span class="ids-glyph">⿻</span><span>9 = Chồng giao</span></div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Residual Stroke Keys -->
+      <div id="tabStrokes" class="tab-content">
+        <div class="keymap-grid">
+          <div class="keymap-item"><span>0 nét dư (terminal)</span><kbd>z</kbd></div>
+          <div class="keymap-item"><span>1 nét dư</span><kbd>1</kbd></div>
+          <div class="keymap-item"><span>2 nét dư</span><kbd>2</kbd></div>
+          <div class="keymap-item"><span>3 nét dư</span><kbd>3</kbd></div>
+          <div class="keymap-item"><span>4 nét dư</span><kbd>4</kbd></div>
+          <div class="keymap-item"><span>5 nét dư</span><kbd>5</kbd></div>
+          <div class="keymap-item"><span>6 nét dư</span><kbd>6</kbd></div>
+          <div class="keymap-item"><span>7 nét dư</span><kbd>7</kbd></div>
+          <div class="keymap-item"><span>8 nét dư</span><kbd>8</kbd></div>
+          <div class="keymap-item"><span>9 nét dư</span><kbd>9</kbd></div>
+          <div class="keymap-item"><span>10 nét dư</span><kbd>0</kbd></div>
+          <div class="keymap-item"><span>11 nét dư</span><kbd>a</kbd></div>
+          <div class="keymap-item"><span>12 nét dư</span><kbd>b</kbd></div>
+          <div class="keymap-item"><span>13 nét dư</span><kbd>c</kbd></div>
+          <div class="keymap-item"><span>14 nét dư</span><kbd>d</kbd></div>
+          <div class="keymap-item"><span>15 nét dư</span><kbd>e</kbd></div>
+          <div class="keymap-item"><span>16 nét dư</span><kbd>f</kbd></div>
+          <div class="keymap-item"><span>17 nét dư</span><kbd>g</kbd></div>
+          <div class="keymap-item"><span>18 nét dư</span><kbd>h</kbd></div>
+          <div class="keymap-item"><span>28 nét dư</span><kbd>r</kbd></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="toast">Đã sao chép vào bộ nhớ tạm!</div>
+
+  <script>
+    // 51 Chinese Characters Dataset compliant with HANSTROKE V2 Rules
+    const CHAR_DB = [
+      // 13 Verified test cases from specification
+      { char: "你", strokes: 7, formId: "2", form: "⿰ (Trái–phải)", anchor: "亻(2 nét)", residual: 5, resKey: "5", group: "c", groupName: "P-V (Phẩy-Sổ)", code: "52c", desc: "亻(2 nét), dư 5 nét 尔; cấu trúc trái-phải (2); nét đầu phẩy, nét cuối sổ móc (c)" },
+      { char: "明", strokes: 8, formId: "2", form: "⿰ (Trái–phải)", anchor: "日(4 nét)", residual: 4, resKey: "4", group: "6", groupName: "V-H (Sổ-Ngang)", code: "426", desc: "日(4 nét), dư 4 nét 月; cấu trúc trái-phải (2); nét đầu sổ, nét cuối ngang (6)" },
+      { char: "好", strokes: 6, formId: "2", form: "⿰ (Trái–phải)", anchor: "女(3 nét)", residual: 3, resKey: "3", group: "l", groupName: "Z-H (Gập-Ngang)", code: "32l", desc: "女(3 nét), dư 3 nét 子; cấu trúc trái-phải (2); nét đầu gập, nét cuối ngang (l)" },
+      { char: "河", strokes: 8, formId: "2", form: "⿰ (Trái–phải)", anchor: "氵(3 nét)", residual: 5, resKey: "5", group: "g", groupName: "D-H (Chấm-Ngang)", code: "52g", desc: "氵(3 nét), dư 5 nét 可; cấu trúc trái-phải (2); nét đầu chấm, nét cuối ngang 口 (g)" },
+      { char: "书", strokes: 4, formId: "1", form: "Đơn thể (Terminal)", anchor: "书(tự thân)", residual: 0, resKey: "z", group: "o", groupName: "Z-D (Gập-Chấm)", code: "z1o", desc: "Chữ terminal không tách (z); đơn thể (1); nét đầu gập 乛, nét cuối chấm 丶 (o)" },
+      { char: "马", strokes: 3, formId: "1", form: "Đơn thể (Terminal)", anchor: "马(tự thân)", residual: 0, resKey: "z", group: "l", groupName: "Z-H (Gập-Ngang)", code: "z1l", desc: "Terminal (z); đơn thể (1); nét đầu gập 乛, nét cuối ngang 一 (l)" },
+      { char: "乃", strokes: 2, formId: "1", form: "Đơn thể (Terminal)", anchor: "乃(tự thân)", residual: 0, resKey: "z", group: "n", groupName: "Z-P (Gập-Phẩy)", code: "z1n", desc: "Terminal (z); đơn thể (1); nét đầu gập ㄋ, nét cuối phẩy 丿 (n)" },
+      { char: "乘", strokes: 10, formId: "9", form: "⿻ (Chồng giao)", anchor: "禾(5 nét)", residual: 5, resKey: "5", group: "e", groupName: "P-D (Phẩy-Nại)", code: "59e", desc: "Neo 禾(5 nét), dư 5 nét; dạng chồng giao (9); nét đầu phẩy, nét cuối nại (e)" },
+      { char: "国", strokes: 8, formId: "4", form: "⿴ (Bao kín)", anchor: "囗(3 nét)", residual: 8, resKey: "8", group: "t", groupName: "Bao kín tổ hợp", code: "84t", desc: "Vỏ 囗, lõi 玉; 8 nét dư/chuẩn; cấu trúc bao kín ⿴ (4); nhóm tổ hợp đặc thù (t)" },
+      { char: "学", strokes: 8, formId: "3", form: "⿱ (Trên–dưới)", anchor: "子(3 nét)", residual: 8, resKey: "8", group: "t", groupName: "Tổ hợp trên-dưới", code: "83t", desc: "Trên 𭕄, dưới 子; 8 nét; cấu trúc trên-dưới ⿱ (3); nhóm tổ hợp kiểm chứng (t)" },
+      { char: "家", strokes: 10, formId: "3", form: "⿱ (Trên–dưới)", anchor: "宀(3 nét)", residual: 0, resKey: "z", group: "t", groupName: "Tổ hợp 宀-豕", code: "z3t", desc: "Trên 宀, dưới 豕; terminal định chuẩn (z); trên-dưới ⿱ (3); nhóm tổ hợp kiểm chứng (t)" },
+      { char: "人", strokes: 2, formId: "1", form: "Đơn thể (Terminal)", anchor: "人(tự thân)", residual: 2, resKey: "2", group: "1", groupName: "P-D (Đơn thể 2 nét)", code: "21", desc: "Chữ 2 nét; hình thức đơn thể (1); mã 2 ký tự định chuẩn: 21" },
+      { char: "大", strokes: 3, formId: "1", form: "Đơn thể (Terminal)", anchor: "大(tự thân)", residual: 3, resKey: "3", group: "1", groupName: "H-D (Đơn thể 3 nét)", code: "31", desc: "Chữ 3 nét; hình thức đơn thể (1); mã 2 ký tự định chuẩn: 31" },
+
+      // 38 Popular Chinese characters requested in brief
+      { char: "中", strokes: 4, formId: "9", form: "⿻ (Chồng giao)", anchor: "口(3 nét)", residual: 1, resKey: "1", group: "7", groupName: "V-V (Sổ-Sổ)", code: "197", desc: "Neo 口(3), dư nét sổ 丨 (1); dạng xuyên giao ⿻ (9); nét đầu sổ, nét cuối sổ (7)" },
+      { char: "水", strokes: 4, formId: "1", form: "Đơn thể (Terminal)", anchor: "水(tự thân)", residual: 0, resKey: "z", group: "9", groupName: "V-D (Sổ-Nại)", code: "z19", desc: "Terminal (z); đơn thể (1); nét đầu sổ móc 亅, nét cuối nại 丶 (9)" },
+      { char: "火", strokes: 4, formId: "1", form: "Đơn thể (Terminal)", anchor: "火(tự thân)", residual: 0, resKey: "z", group: "j", groupName: "D-D (Chấm-Nại)", code: "z1j", desc: "Terminal (z); đơn thể (1); nét đầu chấm 丶, nét cuối nại ㇏ (j)" },
+      { char: "木", strokes: 4, formId: "1", form: "Đơn thể (Terminal)", anchor: "木(tự thân)", residual: 0, resKey: "z", group: "4", groupName: "H-D (Ngang-Nại)", code: "z14", desc: "Terminal (z); đơn thể (1); nét đầu ngang 一, nét cuối nại ㇏ (4)" },
+      { char: "日", strokes: 4, formId: "1", form: "Đơn thể (Terminal)", anchor: "日(tự thân)", residual: 0, resKey: "z", group: "6", groupName: "V-H (Sổ-Ngang)", code: "z16", desc: "Terminal (z); đơn thể (1); nét đầu sổ 丨, nét cuối ngang đóng đáy 一 (6)" },
+      { char: "月", strokes: 4, formId: "1", form: "Đơn thể (Terminal)", anchor: "月(tự thân)", residual: 0, resKey: "z", group: "b", groupName: "P-H (Phẩy-Ngang)", code: "z1b", desc: "Terminal (z); đơn thể (1); nét đầu phẩy 丿, nét cuối ngang 一 (b)" },
+      { char: "山", strokes: 3, formId: "1", form: "Đơn thể (Terminal)", anchor: "山(tự thân)", residual: 0, resKey: "z", group: "7", groupName: "V-V (Sổ-Sổ)", code: "z17", desc: "Terminal (z); đơn thể (1); nét đầu sổ đứng 丨, nét cuối sổ đứng 丨 (7)" },
+      { char: "田", strokes: 5, formId: "4", form: "⿴ (Bao kín)", anchor: "囗(3 nét)", residual: 2, resKey: "2", group: "6", groupName: "V-H (Sổ-Ngang)", code: "246", desc: "Vỏ 囗, dư 十 (2 nét); bao kín ⿴ (4); nét đầu sổ 丨, nét cuối ngang 一 (6)" },
+      { char: "天", strokes: 4, formId: "1", form: "Đơn thể (Terminal)", anchor: "天(tự thân)", residual: 0, resKey: "z", group: "4", groupName: "H-D (Ngang-Nại)", code: "z14", desc: "Terminal (z); đơn thể (1); nét đầu ngang 一, nét cuối nại ㇏ (4)" },
+      { char: "上", strokes: 3, formId: "1", form: "Đơn thể (Terminal)", anchor: "上(tự thân)", residual: 0, resKey: "z", group: "6", groupName: "V-H (Sổ-Ngang)", code: "z16", desc: "Terminal (z); đơn thể (1); nét đầu sổ 丨, nét cuối ngang 一 (6)" },
+      { char: "下", strokes: 3, formId: "1", form: "Đơn thể (Terminal)", anchor: "下(tự thân)", residual: 0, resKey: "z", group: "4", groupName: "H-D (Ngang-Chấm)", code: "z14", desc: "Terminal (z); đơn thể (1); nét đầu ngang 一, nét cuối chấm 丶 (4)" },
+      { char: "一", strokes: 1, formId: "1", form: "Đơn thể (Terminal)", anchor: "一(tự thân)", residual: 0, resKey: "z", group: "1", groupName: "H-H (Ngang-Ngang)", code: "z11", desc: "Terminal (z); đơn thể (1); nét đầu ngang, nét cuối ngang (1)" },
+      { char: "二", strokes: 2, formId: "3", form: "⿱ (Trên–dưới)", anchor: "一(1 nét)", residual: 1, resKey: "1", group: "1", groupName: "H-H (Ngang-Ngang)", code: "131", desc: "Dư 1 nét (1); dạng trên-dưới ⿱ (3); nét đầu ngang, nét cuối ngang (1)" },
+      { char: "三", strokes: 3, formId: "3", form: "⿱ (Trên–dưới)", anchor: "一(1 nét)", residual: 2, resKey: "2", group: "1", groupName: "H-H (Ngang-Ngang)", code: "231", desc: "Dư 2 nét (2); dạng trên-dưới ⿱ (3); nét đầu ngang, nét cuối ngang (1)" },
+      { char: "小", strokes: 3, formId: "1", form: "Đơn thể (Terminal)", anchor: "小(tự thân)", residual: 0, resKey: "z", group: "9", groupName: "V-D (Sổ-Chấm)", code: "z19", desc: "Terminal (z); đơn thể (1); nét đầu sổ móc 亅, nét cuối chấm 丶 (9)" },
+      { char: "口", strokes: 3, formId: "1", form: "Đơn thể (Terminal)", anchor: "口(tự thân)", residual: 0, resKey: "z", group: "6", groupName: "V-H (Sổ-Ngang)", code: "z16", desc: "Terminal (z); đơn thể (1); nét đầu sổ 丨, nét cuối ngang đáy 一 (6)" },
+      { char: "手", strokes: 4, formId: "1", form: "Đơn thể (Terminal)", anchor: "手(tự thân)", residual: 0, resKey: "z", group: "f", groupName: "P-Z (Phẩy-Gập)", code: "z1f", desc: "Terminal (z); đơn thể (1); nét đầu phẩy 丿, nét cuối cong móc 亅/㇁ (f)" },
+      { char: "目", strokes: 5, formId: "1", form: "Đơn thể (Terminal)", anchor: "目(tự thân)", residual: 0, resKey: "z", group: "6", groupName: "V-H (Sổ-Ngang)", code: "z16", desc: "Terminal (z); đơn thể (1); nét đầu sổ 丨, nét cuối ngang 一 (6)" },
+      { char: "耳", strokes: 6, formId: "1", form: "Đơn thể (Terminal)", anchor: "耳(tự thân)", residual: 0, resKey: "z", group: "1", groupName: "H-H (Ngang-Ngang)", code: "z11", desc: "Terminal (z); đơn thể (1); nét đầu ngang 一, nét cuối ngang 一 (1)" },
+      { char: "心", strokes: 4, formId: "1", form: "Đơn thể (Terminal)", anchor: "心(tự thân)", residual: 0, resKey: "z", group: "j", groupName: "D-D (Chấm-Chấm)", code: "z1j", desc: "Terminal (z); đơn thể (1); nét đầu chấm 丶, nét cuối chấm 丶 (j)" },
+      { char: "力", strokes: 2, formId: "1", form: "Đơn thể (Terminal)", anchor: "力(tự thân)", residual: 0, resKey: "z", group: "n", groupName: "Z-P (Gập-Phẩy)", code: "z1n", desc: "Terminal (z); đơn thể (1); nét đầu gập 𠃌, nét cuối phẩy 丿 (n)" },
+      { char: "女", strokes: 3, formId: "1", form: "Đơn thể (Terminal)", anchor: "女(tự thân)", residual: 0, resKey: "z", group: "l", groupName: "Z-H (Gập-Ngang)", code: "z1l", desc: "Terminal (z); đơn thể (1); nét đầu gập ㄑ, nét cuối ngang 一 (l)" },
+      { char: "子", strokes: 3, formId: "1", form: "Đơn thể (Terminal)", anchor: "子(tự thân)", residual: 0, resKey: "z", group: "l", groupName: "Z-H (Gập-Ngang)", code: "z1l", desc: "Terminal (z); đơn thể (1); nét đầu gập ㇇, nét cuối ngang 一 (l)" },
+      { char: "男", strokes: 7, formId: "3", form: "⿱ (Trên–dưới)", anchor: "田(5 nét)", residual: 2, resKey: "2", group: "8", groupName: "V-P (Sổ-Phẩy)", code: "238", desc: "Neo 田(5), dư 力 (2 nét); trên-dưới ⿱ (3); nét đầu sổ 丨, nét cuối phẩy 丿 (8)" },
+      { char: "白", strokes: 5, formId: "1", form: "Đơn thể (Terminal)", anchor: "白(tự thân)", residual: 0, resKey: "z", group: "b", groupName: "P-H (Phẩy-Ngang)", code: "z1b", desc: "Terminal (z); đơn thể (1); nét đầu phẩy 丿, nét cuối ngang 一 (b)" },
+      { char: "黑", strokes: 12, formId: "3", form: "⿱ (Trên–dưới)", anchor: "灬(4 nét)", residual: 8, resKey: "8", group: "9", groupName: "V-D (Sổ-Chấm)", code: "839", desc: "Neo 灬(4), dư 里 (8 nét); trên-dưới ⿱ (3); nét đầu sổ 丨, nét cuối chấm 丶 (9)" },
+      { char: "石", strokes: 5, formId: "5", form: "⿸ (Bao mở phải)", anchor: "口(3 nét)", residual: 2, resKey: "2", group: "1", groupName: "H-H (Ngang-Ngang)", code: "251", desc: "Neo 口, dư 厂 (2 nét); bao mở phải ⿸ (5); nét đầu ngang 一, nét cuối ngang đáy (1)" },
+      { char: "竹", strokes: 6, formId: "2", form: "⿰ (Trái–phải)", anchor: "𥫗(3 nét)", residual: 3, resKey: "3", group: "c", groupName: "P-V (Phẩy-Sổ)", code: "32c", desc: "Hai nửa đối xứng; dư 3 nét; cấu trúc trái-phải ⿰ (2); nét đầu phẩy, nét cuối sổ (c)" },
+      { char: "米", strokes: 6, formId: "1", form: "Đơn thể (Terminal)", anchor: "米(tự thân)", residual: 0, resKey: "z", group: "j", groupName: "D-D (Chấm-Nại)", code: "z1j", desc: "Terminal (z); đơn thể (1); nét đầu chấm 丶, nét cuối nại ㇏ (j)" },
+      { char: "雨", strokes: 8, formId: "1", form: "Đơn thể (Terminal)", anchor: "雨(tự thân)", residual: 0, resKey: "z", group: "4", groupName: "H-D (Ngang-Chấm)", code: "z14", desc: "Terminal (z); đơn thể (1); nét đầu ngang 一, nét cuối chấm 丶 (4)" },
+      { char: "雪", strokes: 11, formId: "3", form: "⿱ (Trên–dưới)", anchor: "雨(8 nét)", residual: 3, resKey: "3", group: "1", groupName: "H-H (Ngang-Ngang)", code: "331", desc: "Neo 雨(8), dư 彐 (3 nét); trên-dưới ⿱ (3); nét đầu ngang 一, nét cuối ngang 一 (1)" },
+      { char: "風", strokes: 9, formId: "6", form: "⿹ (Bao mở trái)", anchor: "虫(6 nét)", residual: 3, resKey: "3", group: "e", groupName: "P-D (Phẩy-Chấm)", code: "36e", desc: "Vỏ 几(3 nét), lõi 虫; dạng bao mở ⿹ (6); nét đầu phẩy, nét cuối chấm 丶 (e)" },
+      { char: "花", strokes: 7, formId: "3", form: "⿱ (Trên–dưới)", anchor: "艹(3 nét)", residual: 4, resKey: "4", group: "5", groupName: "H-Z (Ngang-Gập)", code: "435", desc: "Neo 艹(3), dư 化 (4 nét); trên-dưới ⿱ (3); nét đầu ngang, nét cuối cong móc 乚 (5)" },
+      { char: "魚", strokes: 11, formId: "3", form: "⿱ (Trên–dưới)", anchor: "灬/一(4 nét)", residual: 7, resKey: "7", group: "b", groupName: "P-H (Phẩy-Ngang)", code: "73b", desc: "Đầu 𠂊, thân 田, đuôi 一/灬; dư 7; trên-dưới ⿱ (3); nét đầu phẩy, nét cuối ngang (b)" },
+      { char: "鳥", strokes: 11, formId: "1", form: "Đơn thể (Terminal)", anchor: "鳥(tự thân)", residual: 0, resKey: "z", group: "b", groupName: "P-H (Phẩy-Ngang)", code: "z1b", desc: "Terminal (z); đơn thể (1); nét đầu phẩy 丿, nét cuối ngang 一 (b)" },
+      { char: "車", strokes: 7, formId: "1", form: "Đơn thể (Terminal)", anchor: "車(tự thân)", residual: 0, resKey: "z", group: "2", groupName: "H-V (Ngang-Sổ)", code: "z12", desc: "Terminal (z); đơn thể (1); nét đầu ngang 一, nét cuối sổ đứng 丨 xuyên đáy (2)" },
+      { char: "門", strokes: 8, formId: "5", form: "⿵ (Bao mở dưới)", anchor: "門(tự thân)", residual: 0, resKey: "z", group: "6", groupName: "V-H (Sổ-Ngang)", code: "z56", desc: "Terminal bao mở (z); dạng ⿵ (5); nét đầu sổ đứng 丨, nét cuối ngang/sổ móc (6)" },
+      { char: "龍", strokes: 16, formId: "2", form: "⿰ (Trái–phải)", anchor: "竜(10 nét)", residual: 6, resKey: "6", group: "k", groupName: "D-Z (Chấm-Gập)", code: "62k", desc: "Trái 立+月 (10), phải 𧘇 (6 nét); trái-phải ⿰ (2); nét đầu chấm 丶, nét cuối gập móc (k)" }
+    ];
+
+    // Reference mappings for decomposition engine
+    const RESIDUAL_MAP = {
+      'z': "0 nét (Terminal)", '1': "1 nét dư", '2': "2 nét dư", '3': "3 nét dư",
+      '4': "4 nét dư", '5': "5 nét dư", '6': "6 nét dư", '7': "7 nét dư",
+      '8': "8 nét dư", '9': "9 nét dư", '0': "10 nét dư", 'a': "11 nét dư",
+      'b': "12 nét dư", 'c': "13 nét dư", 'd': "14 nét dư", 'e': "15 nét dư",
+      'f': "16 nét dư", 'g': "17 nét dư", 'h': "18 nét dư", 'r': "28 nét dư"
+    };
+
+    const IDS_MAP = {
+      '1': "Đơn thể (terminal)",
+      '2': "⿰ Trái – Phải",
+      '3': "⿱ Trên – Dưới",
+      '4': "⿴ Bao kín",
+      '5': "⿵/⿸ Bao mở phải",
+      '6': "⿶/⿹ Bao mở trái",
+      '7': "⿷/⿺ Bao mở dưới",
+      '8': "⿀ Bao mở trên",
+      '9': "⿻ Chồng giao"
+    };
+
+    const SHAPE_MAP = {
+      '1': "H-H (Ngang-Ngang)", '2': "H-V (Ngang-Sổ)", '3': "H-P (Ngang-Phẩy)", '4': "H-D (Ngang-Chấm)", '5': "H-Z (Ngang-Gập)",
+      '6': "V-H (Sổ-Ngang)", '7': "V-V (Sổ-Sổ)", '8': "V-P (Sổ-Phẩy)", '9': "V-D (Sổ-Chấm)", 'a': "V-Z (Sổ-Gập)",
+      'b': "P-H (Phẩy-Ngang)", 'c': "P-V (Phẩy-Sổ)", 'd': "P-P (Phẩy-Phẩy)", 'e': "P-D (Phẩy-Nại)", 'f': "P-Z (Phẩy-Gập)",
+      'g': "D-H (Chấm-Ngang)", 'h': "D-V (Chấm-Sổ)", 'i': "D-P (Chấm-Phẩy)", 'j': "D-D (Chấm-Chấm)", 'k': "D-Z (Chấm-Gập)",
+      'l': "Z-H (Gập-Ngang)", 'm': "Z-V (Gập-Sổ)", 'n': "Z-P (Gập-Phẩy)", 'o': "Z-D (Gập-Chấm)", 'p': "Z-Z (Gập-Gập)",
+      't': "Tổ hợp / Khối đặc thù"
+    };
+
+    // DOM Elements
+    const HANSTROKEInput = document.getElementById("HANSTROKEInput");
+    const candGrid = document.getElementById("candGrid");
+    const candCount = document.getElementById("candCount");
+    const decT1 = document.getElementById("decT1");
+    const decT2 = document.getElementById("decT2");
+    const decT3 = document.getElementById("decT3");
+
+    const lookupInput = document.getElementById("lookupInput");
+    const lookupResult = document.getElementById("lookupResult");
+    const sampleList = document.getElementById("sampleList");
+
+    const outputBox = document.getElementById("outputBox");
+    const copyBtn = document.getElementById("copyBtn");
+    const backspaceBtn = document.getElementById("backspaceBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const toast = document.getElementById("toast");
+
+    let currentCandidates = [];
+
+    // Show toast helper
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    // Append to Output Buffer
+    function appendToOutput(char) {
+      outputBox.innerText += char;
+      HANSTROKEInput.value = "";
+      updateDecomposition("");
+      renderCandidates([]);
+      HANSTROKEInput.focus();
+    }
+
+    // Update real-time 3-level decomposition
+    function updateDecomposition(val) {
+      const code = val.toLowerCase().trim();
+      if (!code) {
+        decT1.textContent = "—";
+        decT2.textContent = "—";
+        decT3.textContent = "—";
+        return;
+      }
+
+      // Tầng 1: Nét dư
+      const c1 = code[0];
+      decT1.textContent = c1 ? (RESIDUAL_MAP[c1] ? `${c1} → ${RESIDUAL_MAP[c1]}` : `${c1} (Chưa rõ)`) : "—";
+
+      // Tầng 2: Hình thức IDS
+      const c2 = code[1];
+      decT2.textContent = c2 ? (IDS_MAP[c2] ? `${c2} → ${IDS_MAP[c2]}` : `${c2} (Chưa rõ)`) : "—";
+
+      // Tầng 3: Nhóm hình dạng
+      const c3 = code[2];
+      decT3.textContent = c3 ? (SHAPE_MAP[c3] ? `${c3} → ${SHAPE_MAP[c3]}` : `${c3} (Đặc thù)`) : "—";
+    }
+
+    // Render candidates grid
+    function renderCandidates(list) {
+      currentCandidates = list.slice(0, 9);
+      candGrid.innerHTML = "";
+      candCount.textContent = `${currentCandidates.length} ứng viên`;
+
+      if (currentCandidates.length === 0) {
+        candGrid.innerHTML = `<div class="cand-empty">${HANSTROKEInput.value.trim() ? "Không tìm thấy ký tự trùng khớp" : "Nhập mã vào ô phía trên để hiển thị ứng viên"}</div>`;
+        return;
+      }
+
+      currentCandidates.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "cand-item";
+        div.innerHTML = `
+          <span class="cand-num">${index + 1}</span>
+          <span class="cand-char">${item.char}</span>
+          <span class="cand-code">${item.code}</span>
+        `;
+        div.addEventListener("click", () => appendToOutput(item.char));
+        candGrid.appendChild(div);
+      });
+    }
+
+    // Handle Input in HANSTROKE Typing Field
+    HANSTROKEInput.addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      updateDecomposition(query);
+
+      if (!query) {
+        renderCandidates([]);
+        return;
+      }
+
+      // Search prefix & exact matches in database
+      const filtered = CHAR_DB.filter(item => item.code.toLowerCase().startsWith(query));
+      renderCandidates(filtered);
+    });
+
+    // Keyboard navigation (Keys 1-9 to select candidate, Space/Enter to select first)
+    HANSTROKEInput.addEventListener("keydown", (e) => {
+      const key = e.key;
+
+      // Space or Enter picks candidate #1
+      if ((key === " " || key === "Enter") && currentCandidates.length > 0) {
+        e.preventDefault();
+        appendToOutput(currentCandidates[0].char);
+        return;
+      }
+
+      // If full 3 chars or exact match typed, pressing 1..9 picks candidate
+      const val = HANSTROKEInput.value.trim();
+      if ((val.length >= 2 || currentCandidates.length > 0) && /^[1-9]$/.test(key)) {
+        const idx = parseInt(key, 10) - 1;
+        // If code length is 3, numeric keys always act as candidate selectors
+        if (val.length >= 3 && idx < currentCandidates.length) {
+          e.preventDefault();
+          appendToOutput(currentCandidates[idx].char);
+        }
+      }
+    });
+
+    // Lookup Hanzi Feature
+    function inspectChar(hanzi) {
+      if (!hanzi) return;
+      const entry = CHAR_DB.find(c => c.char === hanzi);
+
+      if (!entry) {
+        lookupResult.innerHTML = `
+          <div style="text-align: center; color: var(--rose); padding: 18px 0;">
+            Chữ <b>${hanzi}</b> chưa có trong kho 51 chữ cốt lõi này.<br>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Hãy chọn một chữ trong danh sách mẫu bên dưới.</span>
+          </div>
+        `;
+        return;
+      }
+
+      lookupInput.value = entry.char;
+
+      lookupResult.innerHTML = `
+        <div class="lookup-main">
+          <div class="lookup-char">${entry.char}</div>
+          <div class="lookup-meta">
+            <h3>Chữ Hán: ${entry.char}</h3>
+            <div>Mã V2: <span class="code-badge">${entry.code}</span></div>
+          </div>
+          <div style="margin-left: auto;">
+            <button class="btn btn-primary" onclick="appendToOutput('${entry.char}')">+ Chèn vào văn bản</button>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item"><div class="lbl">TỔNG SỐ NÉT</div><div class="val">${entry.strokes} nét</div></div>
+          <div class="detail-item"><div class="lbl">HÌNH THỨC IDS (TẦNG 2)</div><div class="val">${entry.form}</div></div>
+          <div class="detail-item"><div class="lbl">THÀNH PHẦN NEO</div><div class="val">${entry.anchor}</div></div>
+          <div class="detail-item"><div class="lbl">NHÓM HÌNH DẠNG (TẦNG 3)</div><div class="val">${entry.group} (${entry.groupName})</div></div>
+        </div>
+
+        <div class="decomp-steps">
+          <div style="font-weight: 700; color: var(--cyan); margin-bottom: 2px;">GIẢI THÍCH CHI TIẾT TỪNG TẦNG:</div>
+          <div class="step-line"><span class="step-tag">Tầng 1 (Nét dư)</span><span>Ký tự <b>${entry.code[0]}</b>: ${entry.residual === 0 ? "Terminal (không tách) → z" : entry.residual + " nét dư"}</span></div>
+          <div class="step-line"><span class="step-tag">Tầng 2 (Hình thức)</span><span>Ký tự <b>${entry.code[1]}</b>: Cấu trúc ${entry.form}</span></div>
+          <div class="step-line"><span class="step-tag">Tầng 3 (Dáng nét)</span><span>Ký tự <b>${entry.code[2] || "—"}</b>: Nhóm ma trận 5×5 ${entry.groupName}</span></div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;"><i>Phân tích cấu tạo: ${entry.desc}</i></div>
+        </div>
+      `;
+    }
+
+    lookupInput.addEventListener("input", (e) => {
+      const char = e.target.value.trim();
+      if (char) inspectChar(char[0]);
+    });
+
+    // Populate Sample Pills
+    function initSamplePills() {
+      sampleList.innerHTML = "";
+      CHAR_DB.forEach(item => {
+        const span = document.createElement("span");
+        span.className = "sample-pill";
+        span.textContent = item.char;
+        span.title = `Mã: ${item.code}`;
+        span.addEventListener("click", () => inspectChar(item.char));
+        sampleList.appendChild(span);
+      });
+    }
+
+    // Buffer Actions
+    copyBtn.addEventListener("click", () => {
+      const text = outputBox.innerText;
+      if (!text) {
+        showToast("Văn bản đang trống!");
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast("Đã sao chép vào bộ nhớ tạm!"));
+      } else {
+        const range = document.createRange();
+        range.selectNodeContents(outputBox);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand("copy");
+        sel.removeAllRanges();
+        showToast("Đã sao chép vào bộ nhớ tạm!");
+      }
+    });
+
+    backspaceBtn.addEventListener("click", () => {
+      const text = outputBox.innerText;
+      if (text.length > 0) {
+        outputBox.innerText = text.slice(0, -1);
+      }
+    });
+
+    clearBtn.addEventListener("click", () => {
+      outputBox.innerText = "";
+      showToast("Đã xóa trắng văn bản");
+    });
+
+    // Tab switcher in Legend Panel
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+      });
+    });
+
+    // Initialize Default States
+    initSamplePills();
+    inspectChar("你"); // default lookup demo
+  </script>
+</body>
+</html>

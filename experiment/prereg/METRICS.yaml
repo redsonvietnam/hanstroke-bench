@@ -1,0 +1,68 @@
+# METRICS — frozen before running. Do NOT change after seeing results.
+
+metrics:
+  - id: M1
+    name: fault_detection_rate
+    description: "Fraction of faults (F1-F5) correctly identified by the workflow"
+    formula: "detected_faults / 5"
+    threshold: ">= 0.6 (3/5) to pass"
+    scoring: "binary per fault: 1 if detected, 0 if missed"
+
+  - id: M2
+    name: false_agreement_rate
+    description: "Fraction of faults where workflow agrees with wrong answer"
+    formula: "false_agreements / 5"
+    threshold: "<= 0.2 (1/5) to pass"
+    scoring: "binary per fault: 1 if agreed with wrong answer"
+
+  - id: M3
+    name: false_rejection_rate
+    description: "Fraction of correct answers rejected as wrong"
+    formula: "false_rejections / 5"
+    threshold: "<= 0.2 (1/5) to pass"
+    scoring: "binary per fault: 1 if correct answer rejected"
+
+  - id: M4
+    name: rounds_to_decision
+    description: "Number of review rounds needed to reach decision"
+    threshold: "<= 3 to pass"
+    scoring: "count"
+
+  - id: M5
+    name: human_interventions
+    description: "Number of times human had to intervene"
+    threshold: "<= 1 to pass"
+    scoring: "count"
+
+  - id: M6
+    name: message_volume
+    description: "Total messages/tokens exchanged between AIs"
+    threshold: "informational (no pass/fail)"
+    scoring: "count"
+
+  - id: M7
+    name: reproducibility
+    description: "Can the decision be reproduced from raw artifacts alone?"
+    threshold: "binary: 1 if yes, 0 if no"
+    scoring: "binary"
+
+  - id: M8
+    name: post_hoc_contamination
+    description: "Did any golden/gate/spec change after seeing output?"
+    threshold: "0 to pass"
+    scoring: "count of post-hoc changes"
+
+# Stop rules
+stop_rules:
+  - "Max 3 rounds per workflow"
+  - "If workflow cannot decide after 3 rounds → BLOCKED"
+  - "No infinite debate"
+  - "Disagreement → experiment, not more text"
+
+# Scoring rules
+scoring_rules:
+  - "Each workflow scored on M1-M8"
+  - "M1 >= 0.6 AND M2 <= 0.2 AND M3 <= 0.2 → workflow PASSES"
+  - "M1 < 0.6 OR M2 > 0.2 OR M3 > 0.2 → workflow FAILS"
+  - "M4-M8 are informational, not pass/fail"
+  - "Do NOT change thresholds after seeing results"

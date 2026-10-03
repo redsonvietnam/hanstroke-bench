@@ -1,0 +1,63 @@
+# PREREG — META-WORKFLOW EXPERIMENT V1
+# Frozen before running W0/W1/W2/W3. Do NOT modify after seeing results.
+
+experiment_id: META-WF-V1
+date: 2026-10-03
+status: FROZEN
+
+# 5 fault tasks derived from real HANSTROKE issues
+tasks:
+  - id: F1
+    name: stroke_mapping_error
+    description: A stroke token is mapped to wrong digit class
+    source: HANSTROKE golden anchor 提 (U+63D0) — hand-coded V2 had wrong mapping
+    fixture: fixtures/f1_stroke_mapping.json
+    ground_truth: fixtures/f1_ground_truth.json
+
+  - id: F2
+    name: regex_tiebreak_error
+    description: Multiple regex branches match; first tie-break is wrong, another is correct
+    source: HANSTROKE IDS tie-break ambiguity
+    fixture: fixtures/f2_tiebreak.json
+    ground_truth: fixtures/f2_ground_truth.json
+
+  - id: F3
+    name: posthoc_golden_edit
+    description: Output conflicts with golden; temptation to edit golden to make output PASS
+    source: HANSTROKE golden 5/63 edited post-hoc
+    fixture: fixtures/f3_golden_edit.json
+    ground_truth: fixtures/f3_ground_truth.json
+
+  - id: F4
+    name: placeholder_handling
+    description: Placeholder/component missing; must distinguish known/unknown/derived/placeholder
+    source: HANSTROKE COMPOSITE_PLACEHOLDER chars
+    fixture: fixtures/f4_placeholder.json
+    ground_truth: fixtures/f4_ground_truth.json
+
+  - id: F5
+    name: candidate_universe_narrowing
+    description: Reviewer sees only corpus subset → pretty results, but full B0 has large collisions
+    source: HANSTROKE B0 universe must be full, not narrowed
+    fixture: fixtures/f5_universe.json
+    ground_truth: fixtures/f5_ground_truth.json
+
+# Workflows to compare
+workflows:
+  - id: W0
+    name: human_baseline
+    description: Single careful human, no multi-AI
+    status: UNAVAILABLE
+
+  - id: W1
+    name: current_relay
+    description: OpenCode summary → ChatGPT → relay → Claude → relay → decision
+    role: CONTROL
+
+  - id: W2
+    name: artifact_first
+    description: Raw artifacts → ChatGPT + Claude review → cross-review → decision
+
+  - id: W3
+    name: blind_first_artifact_verifier
+    description: Raw artifacts → blind first-pass both AIs → verifier → cross-review → decision

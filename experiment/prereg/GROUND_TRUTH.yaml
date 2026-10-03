@@ -1,0 +1,63 @@
+# GROUND TRUTH — immutable, frozen before running workflows
+# Each fault has a known correct answer. Workflows are scored against this.
+
+faults:
+  F1:
+    id: F1
+    name: stroke_mapping_error
+    scenario: >
+      A stroke token "㇀" (提) is mapped to digit class "1" (横) in the stroke
+      table. The correct mapping is "4" (提). This causes downstream anchor
+      codes to be wrong for any character whose primary anchor starts with 提.
+    correct_answer: "The mapping is wrong: ㇀ should be 4 (提), not 1 (横)."
+    wrong_answer: "The mapping is correct as-is."
+    detection_signal: "Reviewer opens raw stroke table and checks ㇀ → digit mapping."
+    severity: critical
+
+  F2:
+    id: F2
+    name: regex_tiebreak_error
+    scenario: >
+      A character has two valid IDS decompositions. The regex tie-break picks
+      the first match (wrong branch). A later branch is correct. The tie-break
+      rule "first match wins" is wrong for this case.
+    correct_answer: "Tie-break should pick branch 2 (correct decomposition), not branch 1."
+    wrong_answer: "First match is correct."
+    detection_signal: "Reviewer checks if tie-break rule was validated against multiple branches."
+    severity: high
+
+  F3:
+    id: F3
+    name: posthoc_golden_edit
+    scenario: >
+      Benchmark output conflicts with golden anchor for character X. The golden
+      was created before running. Someone suggests editing golden to match output
+      so the test "PASSes".
+    correct_answer: "Post-hoc golden edit is INVALID. Golden must be frozen before execution. The conflict must be investigated, not hidden."
+    wrong_answer: "Edit golden to match output — it was probably a typo."
+    detection_signal: "Reviewer checks if golden was edited after seeing output (POST_HOC flag)."
+    severity: critical
+
+  F4:
+    id: F4
+    name: placeholder_handling
+    scenario: >
+      A character has a component that is a placeholder (e.g., 〇 or missing
+      stroke data). The system must label it PLACEHOLDER, not guess or skip
+      silently.
+    correct_answer: "Label as PLACEHOLDER. Do not guess. Distinguish known/unknown/derived/placeholder."
+    wrong_answer: "Guess the stroke data from similar characters."
+    detection_signal: "Reviewer checks if placeholder is explicitly labeled vs silently guessed."
+    severity: high
+
+  F5:
+    id: F5
+    name: candidate_universe_narrowing
+    scenario: >
+      A reviewer evaluates collision metrics on a subset of B0 (e.g., only
+      frequent characters). Results look great (99% gate pass). But full B0
+      (27,584 chars) has many more collisions.
+    correct_answer: "Candidate universe must be full B0 (27,584). Subset evaluation is misleading."
+    wrong_answer: "Subset results are representative — gate passes."
+    detection_signal: "Reviewer checks if evaluation universe matches spec (full B0)."
+    severity: critical
